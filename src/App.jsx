@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
-import { Color, Object3D, Vector3 } from 'three'
+import { Color, InstancedBufferAttribute, Object3D, Vector3 } from 'three'
 import './App.css'
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
@@ -112,6 +112,15 @@ const VoxelWorld = ({ campus }) => {
     if (!ref?.current || items.length === 0) {
       return
     }
+    if (useColors) {
+      const colorCount = ref.current.instanceColor?.count ?? 0
+      if (!ref.current.instanceColor || colorCount !== items.length) {
+        ref.current.instanceColor = new InstancedBufferAttribute(
+          new Float32Array(items.length * 3),
+          3,
+        )
+      }
+    }
     const temp = new Object3D()
     const tempColor = new Color()
     items.forEach((item, index) => {
@@ -144,7 +153,7 @@ const VoxelWorld = ({ campus }) => {
     if (roadRef.current) buildInstances(blocks.roads, roadRef)
     if (sidewalkRef.current) buildInstances(blocks.sidewalks, sidewalkRef)
     if (buildingRef.current) {
-      buildInstances(blocks.buildingBlocks, buildingRef, true)
+      buildInstances(blocks.buildingBlocks, buildingRef)
     }
     if (windowRef.current) buildInstances(blocks.windowBlocks, windowRef)
 
@@ -191,7 +200,7 @@ const VoxelWorld = ({ campus }) => {
         frustumCulled={false}
       >
         <boxGeometry args={[blockWorld, blockWorld, blockWorld]} />
-        <meshStandardMaterial vertexColors roughness={0.75} />
+        <meshStandardMaterial color="#8b3f2a" roughness={0.75} />
       </instancedMesh>
       <instancedMesh
         ref={windowRef}
@@ -409,28 +418,28 @@ function App() {
           name: 'Class Rooms',
           type: 'Classrooms',
           rect: { x: 520, y: 80, w: 760, h: 520 },
-          color: '#577590',
+          color: '#8b3f2a',
         },
         {
           id: 'library',
           name: 'Library',
           type: 'Library',
           rect: { x: 360, y: 420, w: 180, h: 150 },
-          color: '#f28f3b',
+          color: '#8b3f2a',
         },
         {
           id: 'teachers',
           name: "Teachers' Room",
           type: 'Office',
           rect: { x: 840, y: 420, w: 220, h: 150 },
-          color: '#4d9078',
+          color: '#8b3f2a',
         },
         {
           id: 'admission',
           name: 'Admission Office',
           type: 'Office',
           rect: { x: 520, y: 1180, w: 360, h: 180 },
-          color: '#90be6d',
+          color: '#8b3f2a',
         },
       ],
       entrances: [
