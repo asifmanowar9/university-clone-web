@@ -52,39 +52,46 @@ const Npcs = ({ campus }) => {
     })
   })
 
-  return npcSpawns.map((npc, index) => (
-    <group
-      key={npc.id}
-      ref={(node) => {
-        npcRefs.current[index] = node
-      }}
-    >
-      <mesh position={[0, 0.85, 0]} castShadow>
-        <capsuleGeometry args={[0.16, 0.45, 6, 10]} />
-        <meshStandardMaterial color="#2d3f66" roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 1.25, 0]} castShadow>
-        <sphereGeometry args={[0.16, 14, 14]} />
-        <meshStandardMaterial color="#f2d7c4" roughness={0.4} />
-      </mesh>
-      <mesh name="leftArm" position={[-0.22, 0.95, 0]} castShadow>
-        <capsuleGeometry args={[0.06, 0.32, 4, 8]} />
-        <meshStandardMaterial color="#3a4f7a" roughness={0.65} />
-      </mesh>
-      <mesh name="rightArm" position={[0.22, 0.95, 0]} castShadow>
-        <capsuleGeometry args={[0.06, 0.32, 4, 8]} />
-        <meshStandardMaterial color="#3a4f7a" roughness={0.65} />
-      </mesh>
-      <mesh name="leftLeg" position={[-0.1, 0.35, 0]} castShadow>
-        <capsuleGeometry args={[0.07, 0.36, 4, 8]} />
-        <meshStandardMaterial color="#1b1f2a" roughness={0.8} />
-      </mesh>
-      <mesh name="rightLeg" position={[0.1, 0.35, 0]} castShadow>
-        <capsuleGeometry args={[0.07, 0.36, 4, 8]} />
-        <meshStandardMaterial color="#1b1f2a" roughness={0.8} />
-      </mesh>
-    </group>
-  ))
+  return npcSpawns.map((npc, index) => {
+    const accent = index % 2 === 0 ? '#90b4e8' : '#9fd2c1'
+    return (
+      <group
+        key={npc.id}
+        ref={(node) => {
+          npcRefs.current[index] = node
+        }}
+      >
+        <mesh position={[0, 0.9, 0]} castShadow>
+          <capsuleGeometry args={[0.18, 0.55, 6, 10]} />
+          <meshStandardMaterial color="#1f2937" roughness={0.55} metalness={0.25} />
+        </mesh>
+        <mesh position={[0, 1.28, 0]} castShadow>
+          <sphereGeometry args={[0.17, 16, 16]} />
+          <meshStandardMaterial color="#f1d6c6" roughness={0.35} />
+        </mesh>
+        <mesh position={[0, 1.12, 0.16]} castShadow>
+          <boxGeometry args={[0.24, 0.12, 0.04]} />
+          <meshStandardMaterial color={accent} roughness={0.25} metalness={0.2} />
+        </mesh>
+        <mesh name="leftArm" position={[-0.26, 0.98, 0]} castShadow>
+          <capsuleGeometry args={[0.06, 0.34, 4, 8]} />
+          <meshStandardMaterial color="#2b3646" roughness={0.6} metalness={0.2} />
+        </mesh>
+        <mesh name="rightArm" position={[0.26, 0.98, 0]} castShadow>
+          <capsuleGeometry args={[0.06, 0.34, 4, 8]} />
+          <meshStandardMaterial color="#2b3646" roughness={0.6} metalness={0.2} />
+        </mesh>
+        <mesh name="leftLeg" position={[-0.11, 0.34, 0]} castShadow>
+          <capsuleGeometry args={[0.07, 0.4, 4, 8]} />
+          <meshStandardMaterial color="#0f172a" roughness={0.8} />
+        </mesh>
+        <mesh name="rightLeg" position={[0.11, 0.34, 0]} castShadow>
+          <capsuleGeometry args={[0.07, 0.4, 4, 8]} />
+          <meshStandardMaterial color="#0f172a" roughness={0.8} />
+        </mesh>
+      </group>
+    )
+  })
 }
 
 export default Npcs

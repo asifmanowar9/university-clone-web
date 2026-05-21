@@ -15,6 +15,8 @@ const CampusScene = ({ campus, mode }) => {
   const pitchRef = useRef(-0.2)
   const yawTargetRef = useRef(0)
   const pitchTargetRef = useRef(-0.2)
+  const pointerDownRef = useRef(false)
+  const lastPointerRef = useRef({ x: 0, y: 0 })
   const tempTarget = useMemo(() => new Vector3(), [])
   const tempDir = useMemo(() => new Vector3(), [])
   const tempPosition = useMemo(() => new Vector3(), [])
@@ -22,6 +24,30 @@ const CampusScene = ({ campus, mode }) => {
   const sunPosition = [14, 18, -10]
 
   useEffect(() => {
+    const handlePointerDown = (event) => {
+      pointerDownRef.current = true
+      lastPointerRef.current = { x: event.clientX, y: event.clientY }
+    }
+
+    const handlePointerUp = () => {
+      pointerDownRef.current = false
+    }
+
+    const handlePointerMove = (event) => {
+      if (!pointerDownRef.current) return
+      const deltaX = event.clientX - lastPointerRef.current.x
+      const deltaY = event.clientY - lastPointerRef.current.y
+      lastPointerRef.current = { x: event.clientX, y: event.clientY }
+
+      const sensitivity = 0.0025
+      yawTargetRef.current -= deltaX * sensitivity
+      pitchTargetRef.current = clamp(
+        pitchTargetRef.current - deltaY * sensitivity,
+        -1.05,
+        0.65,
+      )
+    }
+
     const handleKeyDown = (event) => {
       const key = event.key.toLowerCase()
       if (
@@ -40,10 +66,18 @@ const CampusScene = ({ campus, mode }) => {
       keysRef.current.delete(key)
     }
 
+    window.addEventListener('pointerdown', handlePointerDown)
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('pointerleave', handlePointerUp)
+    window.addEventListener('pointermove', handlePointerMove)
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
 
     return () => {
+      window.removeEventListener('pointerdown', handlePointerDown)
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('pointerleave', handlePointerUp)
+      window.removeEventListener('pointermove', handlePointerMove)
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
@@ -134,37 +168,28 @@ const CampusScene = ({ campus, mode }) => {
 
   return (
     <>
-      <color attach="background" args={[isNight ? '#0b1020' : '#b7dcff']} />
-      <fog attach="fog" args={[isNight ? '#141a28' : '#cfe7ff', 20, 75]} />
+      <color attach="background" args={[isNight ? '#0b1220' : '#e6f0ff']} />
+      <fog attach="fog" args={[isNight ? '#111827' : '#d9e6f5', 18, 70]} />
       <SkyDome isNight={isNight} />
-      <ambientLight intensity={isNight ? 0.25 : 0.7} />
+      <ambientLight intensity={isNight ? 0.22 : 0.55} />
+      <hemisphereLight
+        intensity={isNight ? 0.18 : 0.45}
+        color={isNight ? '#7aa2ff' : '#cfe6ff'}
+        groundColor={isNight ? '#1b2434' : '#c6d2dd'}
+      />
       <directionalLight
-        position={[10, 18, 12]}
-        intensity={isNight ? 0.35 : 1.1}
-        color={isNight ? '#a9c4ff' : '#ffffff'}
+        position={[12, 20, 8]}
+        intensity={isNight ? 0.35 : 1.0}
+        color={isNight ? '#b8ccff' : '#ffffff'}
         castShadow
       />
       {!isNight && (
         <mesh position={sunPosition}>
-          <sphereGeometry args={[1.4, 24, 24]} />
-          <meshBasicMaterial color="#ffe8a3" />
+          <sphereGeometry args={[1.1, 24, 24]} />
+          <meshBasicMaterial color="#fff2bf" />
         </mesh>
       )}
-      {isNight &&
-        campus.entrances.map((entry) => {
-          const [x, , z] = campusToWorld(campus, entry.x, entry.y)
-          return (
-            <pointLight
-              key={`light-${entry.id}`}
-              position={[x, 1.2, z]}
-              intensity={0.9}
-              distance={6}
-              color="#ffd7a3"
-            />
-          )
-        })}
-
-      <VoxelWorld campus={campus} />
+      <VoxelWorld campus={campus} isNight={isNight} />
       <Cars campus={campus} />
       <Npcs campus={campus} />
 

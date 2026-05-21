@@ -1,13 +1,12 @@
 import { WORLD_SCALE } from '../utils/world'
 
 const Ground = ({ campus }) => {
-  const groundSize = [campus.width * WORLD_SCALE, 0.3, campus.height * WORLD_SCALE]
-  const groundPosition = [0, -0.15, 0]
+  const groundSize = [campus.width * WORLD_SCALE, campus.height * WORLD_SCALE]
 
   return (
-    <mesh position={groundPosition} receiveShadow>
-      <boxGeometry args={groundSize} />
-      <meshStandardMaterial color="#8ecf7b" roughness={0.9} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={groundSize} />
+      <meshStandardMaterial color="#d4e2d5" roughness={0.95} metalness={0.05} />
     </mesh>
   )
 }

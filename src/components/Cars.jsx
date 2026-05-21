@@ -1,26 +1,15 @@
-import { useFrame, useLoader } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
-import {
-  Object3D,
-  RepeatWrapping,
-  SRGBColorSpace,
-  TextureLoader,
-} from 'three'
+import { Object3D } from 'three'
 import { campusToWorld, PLAYER_START } from '../utils/world'
 
 const Cars = ({ campus }) => {
   const bodyRef = useRef(null)
   const roofRef = useRef(null)
-  const noseRef = useRef(null)
+  const glassRef = useRef(null)
+  const lightRef = useRef(null)
   const wheelRef = useRef(null)
   const temp = useMemo(() => new Object3D(), [])
-  const carTexture = useLoader(TextureLoader, '/carr.webp')
-  carTexture.colorSpace = SRGBColorSpace
-  carTexture.flipY = false
-  carTexture.wrapS = RepeatWrapping
-  carTexture.wrapT = RepeatWrapping
-  carTexture.repeat.set(1, 1)
-  carTexture.needsUpdate = true
 
   const cars = useMemo(() => {
     const colors = ['#d1495b', '#f4b860', '#4d908e', '#577590', '#f2cc8f']
@@ -97,7 +86,13 @@ const Cars = ({ campus }) => {
   }, [campus])
 
   useFrame((state) => {
-    if (!bodyRef.current || !roofRef.current || !noseRef.current || !wheelRef.current) {
+    if (
+      !bodyRef.current ||
+      !roofRef.current ||
+      !glassRef.current ||
+      !lightRef.current ||
+      !wheelRef.current
+    ) {
       return
     }
 
@@ -123,22 +118,28 @@ const Cars = ({ campus }) => {
       }
 
       const [wx, , wz] = campusToWorld(campus, x, y)
-      temp.position.set(wx, 0.28, wz)
+      temp.position.set(wx, 0.26, wz)
       temp.rotation.set(0, rotation, 0)
       temp.updateMatrix()
       bodyRef.current.setMatrixAt(index, temp.matrix)
 
-      temp.position.set(wx, 0.46, wz)
+      temp.position.set(wx, 0.42, wz)
       temp.rotation.set(0, rotation, 0)
-      temp.translateX(-0.05)
+      temp.translateX(-0.12)
       temp.updateMatrix()
       roofRef.current.setMatrixAt(index, temp.matrix)
 
-      temp.position.set(wx, 0.34, wz)
+      temp.position.set(wx, 0.38, wz)
       temp.rotation.set(0, rotation, 0)
-      temp.translateX(0.24)
+      temp.translateX(0.14)
       temp.updateMatrix()
-      noseRef.current.setMatrixAt(index, temp.matrix)
+      glassRef.current.setMatrixAt(index, temp.matrix)
+
+      temp.position.set(wx, 0.26, wz)
+      temp.rotation.set(0, rotation, 0)
+      temp.translateX(0.38)
+      temp.updateMatrix()
+      lightRef.current.setMatrixAt(index, temp.matrix)
 
       const wheelOffsets = [
         { x: 0.22, z: 0.22 },
@@ -158,7 +159,8 @@ const Cars = ({ campus }) => {
     })
 
     bodyRef.current.instanceMatrix.needsUpdate = true
-    noseRef.current.instanceMatrix.needsUpdate = true
+    glassRef.current.instanceMatrix.needsUpdate = true
+    lightRef.current.instanceMatrix.needsUpdate = true
     wheelRef.current.instanceMatrix.needsUpdate = true
     roofRef.current.instanceMatrix.needsUpdate = true
   })
@@ -166,19 +168,29 @@ const Cars = ({ campus }) => {
   return (
     <group>
       <instancedMesh ref={bodyRef} args={[null, null, cars.length]} castShadow>
-        <boxGeometry args={[0.78, 0.22, 0.42]} />
-        <meshStandardMaterial map={carTexture} roughness={0.3} />
+        <boxGeometry args={[0.9, 0.2, 0.42]} />
+        <meshStandardMaterial color="#3f4854" roughness={0.35} metalness={0.3} />
       </instancedMesh>
       <instancedMesh ref={roofRef} args={[null, null, cars.length]} castShadow>
-        <boxGeometry args={[0.38, 0.18, 0.3]} />
-        <meshStandardMaterial color="#e8eef2" roughness={0.4} />
+        <boxGeometry args={[0.46, 0.16, 0.3]} />
+        <meshStandardMaterial color="#2b3139" roughness={0.3} metalness={0.5} />
       </instancedMesh>
-      <instancedMesh ref={noseRef} args={[null, null, cars.length]} castShadow>
-        <boxGeometry args={[0.22, 0.16, 0.38]} />
-        <meshStandardMaterial map={carTexture} roughness={0.32} />
+      <instancedMesh ref={glassRef} args={[null, null, cars.length]} castShadow>
+        <boxGeometry args={[0.28, 0.14, 0.32]} />
+        <meshStandardMaterial
+          color="#8fb7e8"
+          roughness={0.1}
+          metalness={0.05}
+          transparent
+          opacity={0.6}
+        />
+      </instancedMesh>
+      <instancedMesh ref={lightRef} args={[null, null, cars.length]} castShadow>
+        <boxGeometry args={[0.08, 0.06, 0.3]} />
+        <meshStandardMaterial color="#f8fbff" emissive="#d9ecff" emissiveIntensity={0.7} />
       </instancedMesh>
       <instancedMesh ref={wheelRef} args={[null, null, cars.length * 4]} castShadow>
-        <cylinderGeometry args={[0.08, 0.08, 0.16, 12]} />
+        <cylinderGeometry args={[0.09, 0.09, 0.16, 14]} />
         <meshStandardMaterial color="#1f1f1f" roughness={0.9} />
       </instancedMesh>
     </group>
