@@ -7,12 +7,23 @@ import { campusData } from './data/campus'
 function App() {
   const [mode, setMode] = useState('day')
   const campus = useMemo(() => campusData, [])
+  const modeOrder = ['day', 'night', 'rain']
+  const modeLabels = {
+    day: 'Switch to Night',
+    night: 'Switch to Rain',
+    rain: 'Switch to Day',
+  }
 
   return (
     <div className="app">
       <button
         type="button"
-        onClick={() => setMode((prev) => (prev === 'day' ? 'night' : 'day'))}
+        onClick={() =>
+          setMode((prev) => {
+            const nextIndex = (modeOrder.indexOf(prev) + 1) % modeOrder.length
+            return modeOrder[nextIndex]
+          })
+        }
         style={{
           position: 'absolute',
           top: 20,
@@ -26,7 +37,7 @@ function App() {
           cursor: 'pointer',
         }}
       >
-        {mode === 'day' ? 'Switch to Night' : 'Switch to Day'}
+        {modeLabels[mode]}
       </button>
       <Canvas className="campus-canvas" shadows camera={{ fov: 60, near: 0.1, far: 200 }}>
         <CampusScene campus={campus} mode={mode} />

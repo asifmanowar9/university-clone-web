@@ -1,4 +1,6 @@
-export const campusData = {
+const LEFT_OFFSET = 260
+
+const baseData = {
   width: 1400,
   height: 2200,
   paths: [
@@ -119,4 +121,31 @@ export const campusData = {
     { x: 1010, y: 900, r: 22 },
     { x: 1120, y: 900, r: 22 },
   ],
+  fields: [
+    {
+      id: 'sports-field',
+      name: 'Sports Field',
+      rect: { x: -240, y: 180, w: 300, h: 780 },
+    },
+  ],
+}
+
+const shiftRectX = (rect, offset) => ({ ...rect, x: rect.x + offset })
+const shiftPointX = (point, offset) => ({ ...point, x: point.x + offset })
+
+export const campusData = {
+  ...baseData,
+  width: baseData.width + LEFT_OFFSET,
+  paths: baseData.paths.map((path) => ({ ...path, x: path.x + LEFT_OFFSET })),
+  buildings: baseData.buildings.map((building) => ({
+    ...building,
+    rect: shiftRectX(building.rect, LEFT_OFFSET),
+  })),
+  entrances: baseData.entrances.map((entry) => shiftPointX(entry, LEFT_OFFSET)),
+  npcs: baseData.npcs.map((npc) => shiftPointX(npc, LEFT_OFFSET)),
+  landmarks: baseData.landmarks.map((tree) => shiftPointX(tree, LEFT_OFFSET)),
+  fields: baseData.fields.map((field) => ({
+    ...field,
+    rect: shiftRectX(field.rect, LEFT_OFFSET),
+  })),
 }

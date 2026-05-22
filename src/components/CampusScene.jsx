@@ -4,7 +4,9 @@ import { Vector3 } from 'three'
 import { clamp, circleHitsRect, campusToWorld, PLAYER_START } from '../utils/world'
 import Cars from './Cars'
 import Npcs from './Npcs'
+import Rain from './Rain'
 import SkyDome from './SkyDome'
+import Sun from './Sun'
 import VoxelWorld from './VoxelWorld'
 
 const CampusScene = ({ campus, mode }) => {
@@ -21,7 +23,8 @@ const CampusScene = ({ campus, mode }) => {
   const tempDir = useMemo(() => new Vector3(), [])
   const tempPosition = useMemo(() => new Vector3(), [])
   const isNight = mode === 'night'
-  const sunPosition = [14, 18, -10]
+  const isRain = mode === 'rain'
+  const sunPosition = [26, 28, -24]
 
   useEffect(() => {
     const handlePointerDown = (event) => {
@@ -168,28 +171,38 @@ const CampusScene = ({ campus, mode }) => {
 
   return (
     <>
-      <color attach="background" args={[isNight ? '#0b1220' : '#e6f0ff']} />
-      <fog attach="fog" args={[isNight ? '#111827' : '#d9e6f5', 18, 70]} />
-      <SkyDome isNight={isNight} />
-      <ambientLight intensity={isNight ? 0.22 : 0.55} />
+      <color
+        attach="background"
+        args={[isNight ? '#0b1220' : isRain ? '#c7d4e5' : '#e6f0ff']}
+      />
+      <fog
+        attach="fog"
+        args={[isNight ? '#111827' : isRain ? '#b5c4d8' : '#d9e6f5', 18, 72]}
+      />
+      <SkyDome mode={mode} />
+      <ambientLight intensity={isNight ? 0.22 : isRain ? 0.38 : 0.18} />
       <hemisphereLight
-        intensity={isNight ? 0.18 : 0.45}
-        color={isNight ? '#7aa2ff' : '#cfe6ff'}
-        groundColor={isNight ? '#1b2434' : '#c6d2dd'}
+        intensity={isNight ? 0.18 : isRain ? 0.32 : 0.2}
+        color={isNight ? '#7aa2ff' : isRain ? '#d2e2f2' : '#cfe6ff'}
+        groundColor={isNight ? '#1b2434' : isRain ? '#9aa9bb' : '#c6d2dd'}
       />
       <directionalLight
-        position={[12, 20, 8]}
-        intensity={isNight ? 0.35 : 1.0}
-        color={isNight ? '#b8ccff' : '#ffffff'}
-        castShadow
+        position={sunPosition}
+        intensity={isNight ? 0.35 : isRain ? 0.7 : 1.6}
+        color={isNight ? '#b8ccff' : isRain ? '#e6f2ff' : '#fff2cc'}
+        castShadow={!isNight && !isRain}
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-near={1}
+        shadow-camera-far={90}
+        shadow-camera-left={-42}
+        shadow-camera-right={42}
+        shadow-camera-top={42}
+        shadow-camera-bottom={-42}
+        shadow-bias={-0.0005}
       />
-      {!isNight && (
-        <mesh position={sunPosition}>
-          <sphereGeometry args={[1.1, 24, 24]} />
-          <meshBasicMaterial color="#fff2bf" />
-        </mesh>
-      )}
-      <VoxelWorld campus={campus} isNight={isNight} />
+      {!isNight && !isRain && <Sun position={sunPosition} />}
+      {isRain && <Rain campus={campus} />}
+      <VoxelWorld campus={campus} isNight={isNight} isRain={isRain} />
       <Cars campus={campus} />
       <Npcs campus={campus} />
 

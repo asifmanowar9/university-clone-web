@@ -6,7 +6,7 @@ const getRectDistance = (a, b) => {
   return Math.hypot(dx, dy)
 }
 
-const buildLamp = (key, position, isNight) => (
+export const buildLamp = (key, position, isNight) => (
   <group key={key} position={position}>
     <mesh position={[0, 1.2, 0]} castShadow>
       <cylinderGeometry args={[0.05, 0.08, 2.4, 10]} />
@@ -15,19 +15,24 @@ const buildLamp = (key, position, isNight) => (
     <mesh position={[0, 2.4, 0]} castShadow>
       <sphereGeometry args={[0.16, 12, 12]} />
       <meshStandardMaterial
-        color="#fff2c6"
-        emissive="#ffe6a6"
-        emissiveIntensity={isNight ? 1.4 : 0.15}
-        roughness={0.2}
+        color="#ffe3b8"
+        emissive="#ffd59a"
+        emissiveIntensity={isNight ? 1.2 : 0.14}
+        roughness={0.35}
         metalness={0.05}
       />
     </mesh>
     {isNight && (
-      <pointLight
+      <spotLight
         position={[0, 2.4, 0]}
-        intensity={1.1}
-        distance={9}
-        color="#ffd7a3"
+        intensity={0.95}
+        distance={7}
+        decay={1.6}
+        angle={0.5}
+        penumbra={0.65}
+        color="#ffc98a"
+        shadow-bias={-0.0002}
+        target-position={[0, 0, 0]}
       />
     )}
   </group>
