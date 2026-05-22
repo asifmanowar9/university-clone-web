@@ -6,10 +6,12 @@ import Cars from './Cars'
 import Npcs from './Npcs'
 import Rain from './Rain'
 import SkyDome from './SkyDome'
+import Moon from './Moon'
 import Sun from './Sun'
+import DarkClouds from './DarkClouds'
 import VoxelWorld from './VoxelWorld'
 
-const CampusScene = ({ campus, mode }) => {
+const CampusScene = ({ campus, mode, isRain }) => {
   const playerRef = useRef(null)
   const keysRef = useRef(new Set())
   const playerPosRef = useRef({ ...PLAYER_START })
@@ -23,8 +25,8 @@ const CampusScene = ({ campus, mode }) => {
   const tempDir = useMemo(() => new Vector3(), [])
   const tempPosition = useMemo(() => new Vector3(), [])
   const isNight = mode === 'night'
-  const isRain = mode === 'rain'
   const sunPosition = [26, 28, -24]
+  const moonPosition = [-32, 26, -30]
 
   useEffect(() => {
     const handlePointerDown = (event) => {
@@ -173,13 +175,13 @@ const CampusScene = ({ campus, mode }) => {
     <>
       <color
         attach="background"
-        args={[isNight ? '#0b1220' : isRain ? '#c7d4e5' : '#e6f0ff']}
+        args={[isNight ? '#0b1220' : isRain ? '#c7d4e5' : '#d7e5f7']}
       />
       <fog
         attach="fog"
-        args={[isNight ? '#111827' : isRain ? '#b5c4d8' : '#d9e6f5', 18, 72]}
+        args={[isNight ? '#111827' : isRain ? '#b5c4d8' : '#c9d9ee', 18, 72]}
       />
-      <SkyDome mode={mode} />
+      <SkyDome isNight={isNight} isRain={isRain} />
       <ambientLight intensity={isNight ? 0.22 : isRain ? 0.38 : 0.18} />
       <hemisphereLight
         intensity={isNight ? 0.18 : isRain ? 0.32 : 0.2}
@@ -201,7 +203,9 @@ const CampusScene = ({ campus, mode }) => {
         shadow-bias={-0.0005}
       />
       {!isNight && !isRain && <Sun position={sunPosition} />}
+      {isNight && <Moon position={moonPosition} />}
       {isRain && <Rain campus={campus} />}
+      {isRain && <DarkClouds />}
       <VoxelWorld campus={campus} isNight={isNight} isRain={isRain} />
       <Cars campus={campus} />
       <Npcs campus={campus} />

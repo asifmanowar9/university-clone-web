@@ -2,12 +2,10 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BackSide } from 'three'
 
-const SkyDome = ({ mode }) => {
+const SkyDome = ({ isNight, isRain }) => {
   const meshRef = useRef(null)
   const { camera } = useThree()
-  const isNight = mode === 'night'
-  const isRain = mode === 'rain'
-  const color = isNight ? '#0f172a' : isRain ? '#b9c6d8' : '#e7f1ff'
+  const color = isNight ? '#0f172a' : isRain ? '#b9c6d8' : '#d8e6f8'
 
   useFrame(() => {
     if (meshRef.current) {
