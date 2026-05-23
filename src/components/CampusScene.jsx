@@ -175,7 +175,7 @@ const CampusScene = ({ campus, mode, isRain }) => {
     <>
       <color
         attach="background"
-        args={[isNight ? '#0b1220' : isRain ? '#c7d4e5' : '#d7e5f7']}
+        args={[isNight ? '#0b1220' : isRain ? '#c7d4e5' : '#87CEFA']}
       />
       <fog
         attach="fog"

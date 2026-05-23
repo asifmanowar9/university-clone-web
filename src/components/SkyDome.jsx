@@ -5,7 +5,7 @@ import { BackSide } from 'three'
 const SkyDome = ({ isNight, isRain }) => {
   const meshRef = useRef(null)
   const { camera } = useThree()
-  const color = isNight ? '#0f172a' : isRain ? '#b9c6d8' : '#d8e6f8'
+  const color = isNight ? '#0f172a' : isRain ? '#b9c6d8' : '#00BFFF'
 
   useFrame(() => {
     if (meshRef.current) {
